@@ -14,17 +14,16 @@ Scapy (pip install scapy)
 Example usages
 ==============
 
-# Diff client.dump and server.dump but ignore different packets on client side and write 
-# output to diff.pcap
+Diff client.dump and server.dump but ignore different packets on client side
 pcap_diff.py -i client.dump -i server.dump -o diff.pcap -l
 
-# Show all differences but ignore all mac addresses 
+Show all differences but ignore all mac addresses 
 pcap_diff.py -i client.dump -i server.dump -o diff.pcap -f m
 
-# Ignore all IP Ids, TCP sequence and acknowledgement number
+Ignore all IP Ids, TCP sequence and acknowledgement number
 pcap_diff.py -i client.dump -i server.dump -o diff.pcap -f ii -f sa
 
-# Do a diff over all packet headers including timestamps, ttl and checksums
+Do a diff over all packet headers including timestamps, ttl and checksums
 pcap_diff.py -i client.dump -i server.dump -o diff.pcap -c
 
 
