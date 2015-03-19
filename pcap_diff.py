@@ -28,7 +28,7 @@
 
 import sys
 import getopt
-from scapy.all import rdpcap, wrpcap, Packet
+from scapy.all import rdpcap, wrpcap, Packet, NoPayload
 
 
 ###[ Parsing parameter ]###
@@ -130,10 +130,19 @@ def flatten(d, parent_key=''):
     Remove checksums (can be different due to calculation in netdev firmware)
     """
     items = []
+
+    # skip scapy internal fields
+    skip_fields = ['fieldtype', 'underlayer', 'initialized', 'fieldtype',
+                   'default_fields', 'aliastypes', 'post_transforms',
+                   'packetfields', 'overloaded_fields', 'sent_time']
     
     for k, v in d.items():
         # No complete diff? Ignore checksum, ttl and time
         if not complete_diff and (k == "chksum" or k == "ttl" or k == "time"): 
+            continue
+
+        # skip time value of deeper layers (they all get it from Packet)
+        if parent_key and k == "time":
             continue
         
         # Ignore source IP?
@@ -157,16 +166,22 @@ def flatten(d, parent_key=''):
             continue
 
         new_key = parent_key + '_' + k if parent_key else k
-        
-        if hasattr(v, "payload") and isinstance(v.payload, Packet):
-            new_key = v.__class__.__name__ + "_" + k 
-            items.extend(flatten(v.payload.fields, new_key).items())
-        elif hasattr(v, "payload"):
-            new_key = v.__class__.__name__ + "_" + k 
+
+        # payload is Packet or str
+        # stop at NoPayload payload
+        if k == "payload" and isinstance(v, NoPayload):
+            continue
+        elif k == "payload" and isinstance(v, Packet):
+            new_key = v.__class__.__name__ + "_" + k
+            items.extend(flatten(v.__dict__, new_key).items())
+        elif k == "payload":
+            new_key = v.__class__.__name__ + "_" + k
             items.append((new_key, v.payload))
-        elif hasattr(v, "fields") and isinstance(v, Packet):
-            new_key = v.__class__.__name__ + "_" + k 
-            items.extend(flatten(v.fields, new_key).items())
+        elif k == "fields" and isinstance(v, Packet):
+            new_key = v.__class__.__name__ + "_" + k
+            items.extend(flatten(v, new_key).items())
+        elif k in skip_fields:
+            continue  # skip internal, unneeded fields
         elif isinstance(v, dict):
             items.extend(flatten(v, new_key).items())
         else:
