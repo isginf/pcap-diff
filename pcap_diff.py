@@ -137,6 +137,7 @@ def flatten(d, parent_key=''):
                    'packetfields', 'overloaded_fields', 'sent_time']
     
     for k, v in d.items():
+        fullk = "%s_%s" % (parent_key, k)
         # No complete diff? Ignore checksum, ttl and time
         if not complete_diff and (k == "chksum" or k == "ttl" or k == "time"): 
             continue
@@ -162,7 +163,7 @@ def flatten(d, parent_key=''):
             continue
 
         # Ignore custom header field?
-        if ignore_header and k == ignore_header:
+        if ignore_header and fullk == ignore_header:
             continue
 
         new_key = parent_key + '_' + k if parent_key else k
