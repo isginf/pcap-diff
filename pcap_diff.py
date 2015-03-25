@@ -43,7 +43,7 @@ ignore_source_mac = True
 ignore_macs = False
 ignore_seq_ack = False
 ignore_ip_id = False
-ignore_header = None
+ignore_headers = []
 diff_only_left = False
 diff_only_right = False
 be_quite = False
@@ -113,7 +113,7 @@ for opt in opts:
         elif opt[1] == "m":
             ignore_macs = True
         else:
-            ignore_header = opt[1]
+            ignore_headers.append(opt[1])
     else:
         usage()
 
@@ -163,7 +163,7 @@ def flatten(d, parent_key=''):
             continue
 
         # Ignore custom header field?
-        if ignore_header and fullk == ignore_header:
+        if fullk in ignore_headers:
             continue
 
         new_key = parent_key + '_' + k if parent_key else k
