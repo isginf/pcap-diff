@@ -234,17 +234,16 @@ def serialize(packet):
     """
     Serialize flattened packet
     """
-    pdict = packet.__dict__
 
     # remove mac addresses?
-    if ignore_macs and pdict.get("fields"):
-       if pdict["fields"].get("src"): del pdict["fields"]["src"]
-       if pdict["fields"].get("dst"): del pdict["fields"]["dst"]
+    if ignore_macs and packet.fields:
+       if packet.fields.get("src"): del packet.fields["src"]
+       if packet.fields.get("dst"): del packet.fields["dst"]
 
-    if (ignore_source or ignore_source_mac) and pdict.get("fields"):
-        if pdict["fields"].get("src"): del pdict["fields"]["src"]
+    if (ignore_source or ignore_source_mac) and packet.fields.get("fields"):
+        if packet.fields.get("src"): del packet.fields["src"]
 
-    flat_packet = flatten(pdict)
+    flat_packet = flatten(packet.fields)
     ## print "\nPKT=",flat_packet
 
     serial = ""
