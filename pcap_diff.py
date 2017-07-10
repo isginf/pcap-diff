@@ -28,7 +28,7 @@
 
 import sys
 import getopt
-from scapy.all import rdpcap, wrpcap, Packet, NoPayload
+from scapy.all import PcapReader, wrpcap, Packet, NoPayload
 
 
 ###[ Parsing parameter ]###
@@ -266,9 +266,10 @@ def read_dump(pcap_file):
         sys.stdout.write("Reading file " + pcap_file + ":\n")
         sys.stdout.flush()
 
-    for packet in rdpcap(pcap_file):
-        count += 1
-        dump[serialize(packet)] = packet
+    with PcapReader(pcap_file) as pcap_reader:
+        for packet in pcap_reader:
+            count += 1
+            dump[serialize(packet)] = packet
 
     if not be_quiet:
         sys.stdout.write("Found " + str(count) + " packets\n\n")
