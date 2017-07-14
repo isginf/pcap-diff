@@ -6,7 +6,7 @@
 # You need to install scapy to use this script
 # -> pip install scapy
 #
-# Copyright 2013 ETH Zurich, ISGINF, Bastian Ballmann
+# Copyright 2013-2017 ETH Zurich, ISGINF, Bastian Ballmann
 # E-Mail: bastian.ballmann@inf.ethz.ch
 # Web: http://www.isg.inf.ethz.ch
 #
@@ -47,6 +47,7 @@ ignore_timestamp  = False
 ignore_ttl        = False
 ignore_ck         = False
 ignore_headers    = []
+first_layer       = None
 diff_only_left    = False
 diff_only_right   = False
 be_quiet          = False
@@ -58,13 +59,14 @@ def usage():
     -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     Diff two or more pcap files
     Programmed by Bastian Ballmann <bastian.ballmann@inf.ethz.ch>
-    Version 1.1.0
+    Version 1.2.0
     -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
     -i <input_file>  (use multiple times)
     -o <output_file> (this is a pcap file)
     -c (complete diff, dont ignore ttl, checksums and timestamps) - False by default
     -l     diff only left side (first pcap file)
+    -L <scapy_layer_name> ignores everything below the given layer
     -r     diff only right side (not first pcap file)
     -f s   (ignore src ip / mac)
     -f sm  (ignore src mac)
@@ -87,7 +89,7 @@ def usage():
     sys.exit(1)
 
 try:
-    cmd_opts = "cf:i:lo:qrd"
+    cmd_opts = "cf:i:L:lo:qrd"
     opts, args = getopt.getopt(sys.argv[1:], cmd_opts)
 except getopt.GetoptError:
     usage()
@@ -103,6 +105,8 @@ for opt in opts:
         show_diffs = True
     elif opt[0] == "-l":
         diff_only_left = True
+    elif opt[0] == "-L":
+        first_layer = opt[1]
     elif opt[0] == "-r":
         diff_only_right = True
     elif opt[0] == "-q":
@@ -242,8 +246,11 @@ def serialize(packet):
 
     if (ignore_source or ignore_source_mac) and packet.fields.get("fields"):
         if packet.fields.get("src"): del packet.fields["src"]
-
-    flat_packet = flatten(packet.fields)
+        
+    if first_layer and packet.haslayer(first_layer):
+        flat_packet = flatten(packet[first_layer].fields)
+    else:
+        flat_packet = flatten(packet.fields)
     ## print "\nPKT=",flat_packet
 
     serial = ""
