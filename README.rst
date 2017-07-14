@@ -32,6 +32,12 @@ Ignore all IP Ids, TCP sequence and acknowledgement number
 
   pcap_diff.py -i client.dump -i server.dump -o diff.pcap -f ii -f sa
 
+Ignore everthing below 802.11 layer
+
+.. code-block:: bash
+
+  pcap_diff.py -i client.dump -i server.dump -o diff.pcap -L Dot11
+
 Do a diff over all packet headers including timestamps, ttl and checksums
 
 .. code-block:: bash
@@ -42,7 +48,7 @@ Do a diff over all packet headers including timestamps, ttl and checksums
 License
 =======
 
-Copyright 2013 ETH Zurich, ISGINF, Bastian Ballmann
+Copyright 2013-2017 ETH Zurich, ISGINF, Bastian Ballmann
 E-Mail: bastian.ballmann@inf.ethz.ch
 Web: http://www.isg.inf.ethz.ch
 
