@@ -7,8 +7,8 @@ Diff two or more pcap files and write a pcap file with different packets as resu
 Requirements
 ============
 
-Python 2.7
-Scapy (pip install scapy)
+Python 3.x
+Scapy (pip install scapy-python3)
 
 
 Example usages
@@ -20,7 +20,7 @@ Diff client.dump and server.dump but ignore different packets on client side
 
   pcap_diff.py -i client.dump -i server.dump -o diff.pcap -l
 
-Show all differences but ignore all mac addresses 
+Show all differences but ignore all mac addresses
 
 .. code-block:: bash
 
@@ -48,7 +48,7 @@ Do a diff over all packet headers including timestamps, ttl and checksums
 License
 =======
 
-Copyright 2013-2017 ETH Zurich, ISGINF, Bastian Ballmann
+Copyright 2013-2018 ETH Zurich, ISGINF, Bastian Ballmann
 E-Mail: bastian.ballmann@inf.ethz.ch
 Web: http://www.isg.inf.ethz.ch
 

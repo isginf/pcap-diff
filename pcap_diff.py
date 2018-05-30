@@ -1,12 +1,12 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #
 # Diff two or more pcap files and write a pcap file with different packets as result
 #
 #
 # You need to install scapy to use this script
-# -> pip install scapy
+# -> pip install scapy-python3
 #
-# Copyright 2013-2017 ETH Zurich, ISGINF, Bastian Ballmann
+# Copyright 2013-2018 ETH Zurich, ISGINF, Bastian Ballmann
 # E-Mail: bastian.ballmann@inf.ethz.ch
 # Web: http://www.isg.inf.ethz.ch
 #
@@ -54,12 +54,12 @@ be_quiet          = False
 show_diffs        = False
 
 def usage():
-    print sys.argv[0]
-    print """
+    print(sys.argv[0])
+    print("""
     -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     Diff two or more pcap files
     Programmed by Bastian Ballmann <bastian.ballmann@inf.ethz.ch>
-    Version 1.2.0
+    Version 1.3.0
     -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
     -i <input_file>  (use multiple times)
@@ -85,7 +85,7 @@ def usage():
     Example usage with ignore mac addresses
     pcap_diff.py -i client.dump -i server.dump -o diff.pcap -f m
 
-    """
+    """)
     sys.exit(1)
 
 try:
@@ -140,7 +140,7 @@ for opt in opts:
         usage()
 
 if len(input_files) < 2:
-   print "Need at least 2 input files to diff"
+   print("Need at least 2 input files to diff")
    sys.exit(1)
 
 
@@ -162,8 +162,6 @@ def flatten(d, parent_key=''):
 
     for k, v in d.items():
         fullk = "%s_%s" % (parent_key, k)
-
-        #print "KEY=",parent_key, ">> key: ",k, " V=",v
 
         # ignore the original if we have payload -- the payload will be expanded
         if hasPayload and k == 'original':
@@ -246,12 +244,11 @@ def serialize(packet):
 
     if (ignore_source or ignore_source_mac) and packet.fields.get("fields"):
         if packet.fields.get("src"): del packet.fields["src"]
-        
+
     if first_layer and packet.haslayer(first_layer):
         flat_packet = flatten(packet[first_layer].fields)
     else:
         flat_packet = flatten(packet.fields)
-    ## print "\nPKT=",flat_packet
 
     serial = ""
 
@@ -325,7 +322,7 @@ diff_packets = []
 base_dump = dumps.pop(0)
 
 if not be_quiet:
-    print "Diffing packets: " + compare_summary()
+    print("Diffing packets: " + compare_summary())
 
 for packet in base_dump.values():
     serial_packet = serialize(packet)
@@ -338,7 +335,7 @@ for packet in base_dump.values():
 
     if not diff_only_right and not found_packet:
         if show_diffs:
-            print " <<< " + packet.summary()
+            print(" <<< " + packet.summary())
         diff_packets.append(packet)
 
 if not diff_only_left:
@@ -349,16 +346,15 @@ if not diff_only_left:
             if show_diffs:
                 for packet in dump.values():
                     packet.show()
-                    print " >>> " + packet.summary()
+                    print(" >>> " + packet.summary())
 
 if not be_quiet:
-    print "\nFound " + str(len(diff_packets)) + " different packets\n"
+    print("\nFound " + str(len(diff_packets)) + " different packets\n")
 
 # Write pcap diff file?
-if output_file:
+if output_file and diff_packets:
     if not be_quiet:
-        print "Writing " + output_file
+        print("Writing " + output_file)
     wrpcap(output_file, diff_packets)
 
-
-sys.exit (len(diff_packets))
+sys.exit(len(diff_packets))
