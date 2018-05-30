@@ -357,4 +357,6 @@ if output_file and diff_packets:
         print("Writing " + output_file)
     wrpcap(output_file, diff_packets)
 
-sys.exit(len(diff_packets))
+    sys.exit(len(diff_packets))
+else:
+    sys.exit(0)
