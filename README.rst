@@ -8,7 +8,7 @@ Requirements
 ============
 
 Python 3.x
-Scapy (pip install scapy-python3)
+Scapy (pip3 install scapy)
 
 
 Example usages
