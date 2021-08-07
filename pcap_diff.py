@@ -329,9 +329,11 @@ for packet in base_dump.values():
     found_packet = False
 
     for dump in dumps:
-        if dump.get(serial_packet):
-            del dump[serial_packet]
-            found_packet = True
+        packet2 = dump.get(serial_packet)
+        if packet2:
+            if packet == packet2 or not complete_diff:
+                del dump[serial_packet]
+                found_packet = True
 
     if not diff_only_right and not found_packet:
         if show_diffs:
